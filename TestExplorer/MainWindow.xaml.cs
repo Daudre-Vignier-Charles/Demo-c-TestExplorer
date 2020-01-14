@@ -79,8 +79,15 @@ namespace TestExplorer
                     }); ; ;
         }
 
+
+        /// <summary>
+        /// se déclenche quand on tappe dans la TextBox en haut,
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void currenPath_KeyDown(object sender, KeyEventArgs e)
         {
+            // Vérifie si la touche est la touche "Entrée", si oui, mets à jour la table
             if (e.Key == Key.Enter)
                 Update(currentPath.Text);
         }
