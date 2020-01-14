@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Drawing;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -30,10 +31,11 @@ namespace TestExplorer
         /// </summary>
         public class FileUI
         {
-            public string filename { get; set; }
+            public string filename { get; set; } // Pour lier avec une DataGrid, le get et set est obligatoire !
             public string path { get; set; }
-
             public FileType type { get; set; }
+            public ImageSource icon { get; set; }
+
         }
 
         /// <summary>
@@ -50,20 +52,66 @@ namespace TestExplorer
             Update(currentPath.Text);
         }
 
+        /// <summary>
+        /// Mets à jour la DataGrid
+        /// </summary>
+        /// <param name="npath"></param>
         public void Update(string npath)
         {
             Directory.SetCurrentDirectory(npath);
             fileList.Clear();
+            // récupération des fichiers
             foreach (string file in Directory.GetDirectories(npath))
-                fileList.Add(new FileUI() { filename = System.IO.Path.GetFileName(file), path = file, type = FileType.Directory });
+                fileList.Add(new FileUI() {
+                    filename = System.IO.Path.GetFileName(file),
+                    path = file,
+                    type = FileType.Directory,
+                });
+            // récupération des dossiers
             foreach (string file in Directory.GetFiles(npath))
-                fileList.Add(new FileUI() { filename = System.IO.Path.GetFileName(file), path = file, type = FileType.File });
+                fileList.Add(
+                    new FileUI()
+                    {
+                        filename = System.IO.Path.GetFileName(file),
+                        path = file,
+                        type = FileType.File,
+                        icon = System.Drawing.Icon.ExtractAssociatedIcon(file).ToImageSource()
+                    }); ; ;
         }
 
         private void currenPath_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
                 Update(currentPath.Text);
+        }
+    }
+
+    /// <summary>
+    /// Transforme l'icone d'un fichier en une image utilisable en WPF, si tu veux la récupérer,
+    /// copie le code tel quel
+    /// </summary>
+    internal static class IconUtilities
+    {
+        [System.Runtime.InteropServices.DllImport("gdi32.dll", SetLastError = true)]
+        private static extern bool DeleteObject(IntPtr hObject);
+
+        public static ImageSource ToImageSource(this Icon icon)
+        {
+            Bitmap bitmap = icon.ToBitmap();
+            IntPtr hBitmap = bitmap.GetHbitmap();
+
+            ImageSource wpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                hBitmap,
+                IntPtr.Zero,
+                Int32Rect.Empty,
+                BitmapSizeOptions.FromEmptyOptions());
+
+            if (!DeleteObject(hBitmap))
+            {
+                throw new System.ComponentModel.Win32Exception();
+            }
+
+            return wpfBitmap;
         }
     }
 }

@@ -18,8 +18,23 @@
             <TabItem Header="TabItem">
                 <Grid Background="#FFE5E5E5">
                     <!-- Il ne faut pas oublier de préciser le nom des objets avec name
-                    Pour que les colonnes se fassent tout seul avec le bon titre, il faut mettre AutoGenerateColumns="True"-->
-                    <DataGrid Name="UIExplorer" HorizontalAlignment="Left" Height="340" VerticalAlignment="Top" Width="786" AutoGenerateColumns="True" Margin="0,23,0,0"/>
+                    Pour que les colonnes se fassent tout seul avec le bon titre, il faut mettre AutoGenerateColumns="True",
+                    ici, je veux qu'une colonne contienne des images, je ne peux pas utiliser AutoGenerateColumns="True"-->
+                    <DataGrid Name="UIExplorer" HorizontalAlignment="Left" Height="340" VerticalAlignment="Top" Width="786" Margin="0,23,0,0">
+                        <!-- Je définis moi même les colonnes -->
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Filename" Binding="{Binding filename}"/>
+                            <DataGridTemplateColumn Header="Icon">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding icon}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Type" Binding="{Binding type}"/>
+                            <DataGridTextColumn Header="Path" Binding="{Binding path}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
             </TabItem>
         </TabControl>
